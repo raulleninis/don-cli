@@ -107,7 +107,7 @@ test('instalar: remove hook antigo do agy que roda o mesmo guarda.mjs e aceita -
   const { instalar } = await import('../lib/instalar.mjs');
   const legado = repoTemporario({
     'package.json': '{}',
-    '.agents/hooks.json': JSON.stringify({ 'guarda-desaperreia': { PreToolUse: [{ matcher: '', hooks: [{ command: 'node hooks/guarda.mjs' }] }] }, outro: { Stop: [] } }),
+    '.agents/hooks.json': JSON.stringify({ 'guarda-antigo': { PreToolUse: [{ matcher: '', hooks: [{ command: 'node hooks/guarda.mjs' }] }] }, outro: { Stop: [] } }),
     'pronto.json': JSON.stringify({ projeto: 'pronto', lealdade: 'exigir', protegidos: { 'src/crypto/': 'x' } }),
   });
   const salvar = console.log;

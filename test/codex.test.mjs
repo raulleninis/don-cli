@@ -15,13 +15,13 @@ before(() => {
     path.join(home, 'config.toml'),
     [
       'model = "x"',
-      "[projects.'e:\\projetos\\dev\\confiavel']",
+      "[projects.'c:\\projetos\\confiavel']",
       'trust_level = "trusted"',
       '',
       '[projects."C:\\\\outro\\\\aspas"]',
       'trust_level = "trusted"',
       '',
-      "[projects.'e:\\projetos\\dev\\nao-confiavel']",
+      "[projects.'c:\\projetos\\nao-confiavel']",
       'trust_level = "untrusted"',
       '',
       '[features]',
@@ -36,13 +36,13 @@ after(() => {
 });
 
 test('confiança do Codex: caminho sem distinção de maiúsculas e barras', { skip: process.platform !== 'win32' }, () => {
-  assert.ok(codexConfiaNoProjeto('E:/Projetos/dev/confiavel'));
-  assert.ok(codexConfiaNoProjeto('E:\\Projetos\\dev\\confiavel\\'));
+  assert.ok(codexConfiaNoProjeto('C:/projetos/confiavel'));
+  assert.ok(codexConfiaNoProjeto('C:\\Projetos\\confiavel\\'));
   assert.ok(codexConfiaNoProjeto('C:\\outro\\aspas'), 'chave com aspas duplas e barras escapadas');
 });
 
 test('confiança do Codex: não confiável, ausente ou de outra seção', { skip: process.platform !== 'win32' }, () => {
-  assert.equal(codexConfiaNoProjeto('E:/Projetos/dev/nao-confiavel'), false);
-  assert.equal(codexConfiaNoProjeto('E:/Projetos/dev/outro'), false);
-  assert.equal(codexConfiaNoProjeto('E:/Projetos/dev/confiavel-mas-outro'), false);
+  assert.equal(codexConfiaNoProjeto('C:/projetos/nao-confiavel'), false);
+  assert.equal(codexConfiaNoProjeto('C:/projetos/outro'), false);
+  assert.equal(codexConfiaNoProjeto('C:/projetos/confiavel-mas-outro'), false);
 });
