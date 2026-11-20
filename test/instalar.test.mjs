@@ -1,3 +1,4 @@
+import console from 'node:console';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -79,4 +80,25 @@ test('resposta: o esquema ecoado no envelope do agy não é resposta', () => {
   assert.equal(extrairJson(`aviso\n${JSON.stringify(semResposta)}`), null);
   const r = { status: 'parcial', resumo: 'x', arquivos: [], testes: '', duvidas: [] };
   assert.deepEqual(extrairJson(JSON.stringify({ ...semResposta, structured_output: r })), r);
+});
+
+test('perfil-codex: no Windows o sandbox elevated sai ativo; fora dele, comentado', async () => {
+  const { perfilCodex } = await import('../lib/instalar.mjs');
+  const { carregarProjeto } = await import('../lib/projeto.mjs');
+  const projeto = await carregarProjeto(raiz);
+  const gerar = (windows) => {
+    const linhas = [];
+    const salvar = console.log;
+    console.log = (t) => linhas.push(t);
+    try {
+      perfilCodex(projeto, undefined, windows);
+    } finally {
+      console.log = salvar;
+    }
+    return linhas.join('\n');
+  };
+  assert.match(gerar(true), /^\[windows\]\nsandbox = "elevated"$/m);
+  assert.match(gerar(true), /^prefer_mxc = true$/m);
+  assert.match(gerar(false), /^# sandbox = "elevated"$/m);
+  assert.doesNotMatch(gerar(false), /^\[windows\]$/m);
 });

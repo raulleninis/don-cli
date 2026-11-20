@@ -101,7 +101,10 @@ O `instalar` cria:
 Depois, siga os passos que o `instalar` imprime:
 
 1. **Revise `.githooks/don.json`** (veja abaixo): o que é protegido e reservado, a verificação.
-2. **Perfil do Codex:** `don perfil-codex >> .codex/config.toml` (ou cole à mão).
+2. **Perfil do Codex:** `don perfil-codex >> .codex/config.toml` (ou cole à mão). No Windows ele já sai
+   com `[windows] sandbox = "elevated"`: a negação de leitura de segredos só existe nesse sandbox, e sem
+   ele o Codex nem inicia (achado pelo `don lealdade`). Exige que o sandbox elevated do Codex já tenha
+   sido configurado uma vez na máquina.
 3. **Confiança do Codex:** o Codex só carrega o `.codex/config.toml` de projeto confiável. Abra
    `codex` uma vez na pasta e aceite, ou acrescente em `~/.codex/config.toml`:
    ```toml
