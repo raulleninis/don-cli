@@ -102,3 +102,28 @@ test('perfil-codex: no Windows o sandbox elevated sai ativo; fora dele, comentad
   assert.match(gerar(false), /^# sandbox = "elevated"$/m);
   assert.doesNotMatch(gerar(false), /^\[windows\]$/m);
 });
+
+test('instalar: remove hook antigo do agy que roda o mesmo guarda.mjs e aceita --config pronto', async () => {
+  const { instalar } = await import('../lib/instalar.mjs');
+  const legado = repoTemporario({
+    'package.json': '{}',
+    '.agents/hooks.json': JSON.stringify({ 'guarda-desaperreia': { PreToolUse: [{ matcher: '', hooks: [{ command: 'node hooks/guarda.mjs' }] }] }, outro: { Stop: [] } }),
+    'pronto.json': JSON.stringify({ projeto: 'pronto', lealdade: 'exigir', protegidos: { 'src/crypto/': 'x' } }),
+  });
+  const salvar = console.log;
+  console.log = () => {};
+  try {
+    instalar(legado, { config: 'pronto.json' });
+    const hooks = JSON.parse(fs.readFileSync(path.join(legado, '.agents/hooks.json'), 'utf8'));
+    assert.deepEqual(Object.keys(hooks).sort(), ['don-guarda', 'outro'], 'o hook antigo saiu e o de terceiros ficou');
+    assert.equal(JSON.parse(fs.readFileSync(path.join(legado, '.githooks/don.json'), 'utf8')).lealdade, 'exigir');
+    fs.writeFileSync(path.join(legado, 'outro.json'), JSON.stringify({ projeto: 'outro' }));
+    instalar(legado, { config: 'outro.json' });
+    assert.equal(JSON.parse(fs.readFileSync(path.join(legado, '.githooks/don.json'), 'utf8')).projeto, 'pronto', 'sem --forcar não sobrescreve');
+    instalar(legado, { config: 'outro.json', forcar: true });
+    assert.equal(JSON.parse(fs.readFileSync(path.join(legado, '.githooks/don.json'), 'utf8')).projeto, 'outro');
+  } finally {
+    console.log = salvar;
+    apagar(legado);
+  }
+});

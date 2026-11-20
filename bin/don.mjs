@@ -41,7 +41,7 @@ Uso (rode de dentro do projeto):
   don listar             worktrees de soldati abertas
   don limpar <slug>      remove worktree e branch (desfaz as junctions antes)
   don relatorio          resumo de .don/registro.jsonl
-  don instalar [dir] [--tipo node|python|vazio] [--forcar]
+  don instalar [dir] [--tipo node|python|vazio] [--config <don.json pronto>] [--forcar]
   don perfil-codex [--nome <perfil>]   imprime o perfil de permissões do Codex
   don checar             confere a instalação no projeto
   don lealdade [--motor agy|codex] [--modelo-agy <id>] [--modelo-codex <id>]
@@ -100,7 +100,7 @@ try {
       relatorio(await carregarProjeto());
       break;
     case 'instalar':
-      instalar(o._[0] ?? process.cwd(), { forcar: !!o.forcar, tipo: o.tipo });
+      instalar(o._[0] ?? process.cwd(), { forcar: !!o.forcar, tipo: o.tipo, config: o.config });
       break;
     case 'perfil-codex':
       perfilCodex(await carregarProjeto(), o.nome);
