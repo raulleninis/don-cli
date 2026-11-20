@@ -1,6 +1,6 @@
-// orquestra — lista única de caminhos sensíveis do projeto.
+// don — lista única de caminhos sensíveis do projeto.
 // Usada pelo pre-commit do git, pelo hook do agy (.agents/hooks/guarda.mjs) e pelo delegador.
-// A configuração do projeto fica em orquestra.json, ao lado deste arquivo. Os dois vivem em
+// A configuração do projeto fica em don.json, ao lado deste arquivo. Os dois vivem em
 // .githooks/, que é protegido: só mudam com intervenção humana.
 //
 // PROTEGIDOS: nenhum commit passa sem liberação humana (LIBERA_CAMINHO_PROTEGIDO=1).
@@ -39,7 +39,7 @@ const SEMPRE_RESERVADOS = {
 
 const SEMPRE_LIBERADOS = ['**/.env.example'];
 
-export const CONFIG = JSON.parse(fs.readFileSync(path.join(AQUI, 'orquestra.json'), 'utf8'));
+export const CONFIG = JSON.parse(fs.readFileSync(path.join(AQUI, 'don.json'), 'utf8'));
 
 export function normalizar(caminho) {
   return String(caminho).replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+/g, '/');

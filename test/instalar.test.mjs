@@ -5,33 +5,33 @@ import path from 'node:path';
 import process from 'node:process';
 import { after, before, test } from 'node:test';
 import { acharResposta, extrairJson } from '../lib/resposta.mjs';
-import { apagar, orquestra, repoTemporario } from './ajuda.mjs';
+import { apagar, don, repoTemporario } from './ajuda.mjs';
 
 let raiz;
 before(() => {
   raiz = repoTemporario({ 'package.json': '{}', '.agents/hooks.json': '{"outro-hook": {"Stop": []}}' });
-  orquestra(raiz, 'instalar');
+  don(raiz, 'instalar');
 });
 after(() => apagar(raiz));
 
 test('instalar cria os arquivos e preserva hooks existentes do agy', () => {
-  for (const rel of ['.githooks/caminhos.mjs', '.githooks/pre-commit', '.githooks/orquestra.json', '.agents/hooks/guarda.mjs',
-    '.claude/skills/delegar/SKILL.md', '.claude/agents/explorador.md']) {
+  for (const rel of ['.githooks/caminhos.mjs', '.githooks/pre-commit', '.githooks/don.json', '.agents/hooks/guarda.mjs',
+    '.claude/skills/don/SKILL.md', '.claude/agents/consigliere.md']) {
     assert.ok(fs.existsSync(path.join(raiz, rel)), rel);
   }
   const hooks = JSON.parse(fs.readFileSync(path.join(raiz, '.agents/hooks.json'), 'utf8'));
-  assert.ok(hooks['orquestra-guarda'] && hooks['outro-hook']);
-  assert.match(fs.readFileSync(path.join(raiz, '.gitignore'), 'utf8'), /^\.agentes\/$/m);
-  const config = JSON.parse(fs.readFileSync(path.join(raiz, '.githooks/orquestra.json'), 'utf8'));
+  assert.ok(hooks['don-guarda'] && hooks['outro-hook']);
+  assert.match(fs.readFileSync(path.join(raiz, '.gitignore'), 'utf8'), /^\.don\/$/m);
+  const config = JSON.parse(fs.readFileSync(path.join(raiz, '.githooks/don.json'), 'utf8'));
   assert.deepEqual(config.links, ['node_modules'], 'projeto Node usa o modelo node');
-  assert.doesNotMatch(fs.readFileSync(path.join(raiz, '.claude/skills/delegar/SKILL.md'), 'utf8'), /\{\{ORQUESTRA\}\}/);
+  assert.doesNotMatch(fs.readFileSync(path.join(raiz, '.claude/skills/don/SKILL.md'), 'utf8'), /\{\{ORQUESTRA\}\}/);
 });
 
-test('instalar de novo não sobrescreve o orquestra.json, nem com --forcar', () => {
-  const arquivo = path.join(raiz, '.githooks/orquestra.json');
+test('instalar de novo não sobrescreve o don.json, nem com --forcar', () => {
+  const arquivo = path.join(raiz, '.githooks/don.json');
   const editado = fs.readFileSync(arquivo, 'utf8').replace('"protegidos": {}', '"protegidos": {"segredo/": "x"}');
   fs.writeFileSync(arquivo, editado);
-  orquestra(raiz, 'instalar', '--forcar');
+  don(raiz, 'instalar', '--forcar');
   assert.equal(fs.readFileSync(arquivo, 'utf8'), editado);
 });
 
@@ -55,8 +55,8 @@ test('pre-commit recusa caminho protegido e aceita o resto', () => {
 });
 
 test('perfil-codex: segredos negados, reservados só leitura, sem rede', () => {
-  const toml = orquestra(raiz, 'perfil-codex');
-  assert.match(toml, /^default_permissions = "orquestra"$/m);
+  const toml = don(raiz, 'perfil-codex');
+  assert.match(toml, /^default_permissions = "don"$/m);
   assert.match(toml, /^"\*\*\/\.env" = "deny"$/m);
   assert.match(toml, /^"\.githooks" = "read"$/m);
   assert.match(toml, /^"segredo" = "read"$/m);

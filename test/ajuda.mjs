@@ -1,4 +1,4 @@
-// Monta um repositório git temporário com a orquestra instalada, para os testes.
+// Monta um repositório git temporário com o don instalada, para os testes.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -6,10 +6,10 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
-export const BIN = fileURLToPath(new URL('../bin/orquestra.mjs', import.meta.url));
+export const BIN = fileURLToPath(new URL('../bin/don.mjs', import.meta.url));
 
 export function repoTemporario(arquivos = {}) {
-  const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'orquestra-teste-'));
+  const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'don-teste-'));
   execFileSync('git', ['init', '-q', '-b', 'main'], { cwd: raiz });
   execFileSync('git', ['config', 'user.email', 'teste@exemplo.invalid'], { cwd: raiz });
   execFileSync('git', ['config', 'user.name', 'Teste'], { cwd: raiz });
@@ -20,7 +20,7 @@ export function repoTemporario(arquivos = {}) {
   return raiz;
 }
 
-export function orquestra(raiz, ...args) {
+export function don(raiz, ...args) {
   return execFileSync(process.execPath, [BIN, ...args], { cwd: raiz, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
 

@@ -9,7 +9,7 @@ import { codexConfiaNoProjeto } from '../lib/codex.mjs';
 let home;
 const antes = process.env.CODEX_HOME;
 before(() => {
-  home = fs.mkdtempSync(path.join(os.tmpdir(), 'orquestra-codex-'));
+  home = fs.mkdtempSync(path.join(os.tmpdir(), 'don-codex-'));
   process.env.CODEX_HOME = home;
   fs.writeFileSync(
     path.join(home, 'config.toml'),

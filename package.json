@@ -1,11 +1,11 @@
 {
-  "name": "orquestra",
+  "name": "don-cli",
   "version": "0.1.0",
   "description": "Claude orquestra; Codex e Antigravity (agy) executam em worktrees descartáveis, com trava de caminhos sensíveis e relatório curto.",
   "type": "module",
   "private": true,
   "bin": {
-    "orquestra": "bin/orquestra.mjs"
+    "don-cli": "bin/don.mjs"
   },
   "engines": {
     "node": ">=20"

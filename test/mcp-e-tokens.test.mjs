@@ -23,7 +23,7 @@ function chamar(method, params) {
 }
 
 before(() => {
-  pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'orquestra-mcp-'));
+  pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'don-mcp-'));
   fs.mkdirSync(path.join(pasta, 'Ferramenta', 'cli'), { recursive: true });
   fs.writeFileSync(path.join(pasta, 'Ferramenta', 'sandbox.md'), '# Sandbox\nO sandbox bloqueia a rede por padrão.\nOutra linha.');
   fs.writeFileSync(path.join(pasta, 'Ferramenta', 'cli', 'flags.md'), '# Flags\n--sandbox liga o sandbox');

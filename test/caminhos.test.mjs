@@ -3,18 +3,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
 import { pathToFileURL } from 'node:url';
-import { apagar, orquestra, repoTemporario } from './ajuda.mjs';
+import { apagar, don, repoTemporario } from './ajuda.mjs';
 
 let raiz;
 let c;
 before(async () => {
   raiz = repoTemporario({ 'package.json': '{}' });
-  orquestra(raiz, 'instalar');
-  const config = JSON.parse(fs.readFileSync(path.join(raiz, '.githooks', 'orquestra.json'), 'utf8'));
+  don(raiz, 'instalar');
+  const config = JSON.parse(fs.readFileSync(path.join(raiz, '.githooks', 'don.json'), 'utf8'));
   config.protegidos = { 'src/crypto/': 'Congelado.' };
   config.reservados['api/'] = 'Sensível.';
   config.liberados = ['docs/livre.md'];
-  fs.writeFileSync(path.join(raiz, '.githooks', 'orquestra.json'), JSON.stringify(config));
+  fs.writeFileSync(path.join(raiz, '.githooks', 'don.json'), JSON.stringify(config));
   c = await import(pathToFileURL(path.join(raiz, '.githooks', 'caminhos.mjs')).href);
 });
 after(() => apagar(raiz));
@@ -36,7 +36,7 @@ test('protegidos: do projeto e embutidos', () => {
   assert.match(c.motivo('src/crypto/chave.ts', c.PROTEGIDOS), /Congelado/);
   assert.ok(c.motivo('.env', c.PROTEGIDOS));
   assert.ok(c.motivo('config/.env.local', c.PROTEGIDOS));
-  assert.ok(c.motivo('.githooks/orquestra.json', c.PROTEGIDOS));
+  assert.ok(c.motivo('.githooks/don.json', c.PROTEGIDOS));
   assert.ok(c.motivo('.agents/hooks/guarda.mjs', c.PROTEGIDOS));
   assert.equal(c.motivo('api/rotas.ts', c.PROTEGIDOS), null, 'reservado não é protegido');
   assert.equal(c.motivo('src/ui/tela.tsx', c.PROTEGIDOS), null);

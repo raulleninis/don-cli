@@ -1,5 +1,5 @@
 ---
-name: explorador
+name: consigliere
 description: Busca barata e somente leitura no código e na documentação — onde está X, quem usa Y, quais arquivos uma tarefa toca. Use antes de ler muitos arquivos no contexto do orquestrador. Devolve conclusões com caminhos e linhas, não cópias de arquivo.
 model: haiku
 tools: Read, Grep, Glob

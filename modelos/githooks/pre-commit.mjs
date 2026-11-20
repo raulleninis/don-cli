@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// orquestra — trava comum a todos os agentes (Claude, Codex, agy) e a pessoas: recusa o commit
+// don — trava comum a todos os agentes (Claude, Codex, agy) e a pessoas: recusa o commit
 // que toca em caminho PROTEGIDO. Liberação humana: LIBERA_CAMINHO_PROTEGIDO=1 git commit ...
 import { execFileSync } from 'node:child_process';
 import console from 'node:console';

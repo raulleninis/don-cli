@@ -5,7 +5,7 @@ import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { after, before, test } from 'node:test';
-import { sincronizarDocs, urlsDoIndice } from '../lib/docs.mjs';
+import { sincronizarDocs, urlsDoIndice } from '../lib/consigliere/docs.mjs';
 
 let servidor;
 let base;
@@ -34,7 +34,7 @@ before(async () => {
   });
   await new Promise((r) => servidor.listen(0, '127.0.0.1', r));
   base = `http://127.0.0.1:${servidor.address().port}`;
-  pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'orquestra-docs-'));
+  pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'don-docs-'));
   indice = `- [A](${base}/docs/a/)\n- [B](${base}/docs/b)\n- [Fora](https://outro.exemplo/docs/x)\n- [Marketing](${base}/pricing)`;
 });
 after(() => {
@@ -86,7 +86,7 @@ test('baixar, atualizar (304), alteração, página nova, verificar sem gravar, 
 });
 
 test('filtro: desfaz a conversão de caminho do Git Bash (MSYS)', async () => {
-  const destino = fs.mkdtempSync(path.join(os.tmpdir(), 'orquestra-filtro-'));
+  const destino = fs.mkdtempSync(path.join(os.tmpdir(), 'don-filtro-'));
   try {
     const r = await sincronizarDocs({ acao: 'verificar', indice: `${base}/llms.txt`, pasta: destino, filtro: '^C:/Program Files/Git/docs/b' });
     assert.deepEqual([...r.novas, ...r.alteradas, ...r.iguais], ['b.md']);

@@ -2,20 +2,20 @@
   "model": "opus",
   "permissions": {
     "allow": [
-      "Bash({{ORQUESTRA}} delegar *)",
-      "Bash({{ORQUESTRA}} listar*)",
-      "Bash({{ORQUESTRA}} limpar *)",
-      "Bash({{ORQUESTRA}} relatorio*)",
-      "Bash({{ORQUESTRA}} checar*)",
-      "Bash({{ORQUESTRA}} resumir *)",
-      "Bash({{ORQUESTRA}} revisar *)",
-      "Bash({{ORQUESTRA}} briefing *)",
-      "Bash({{ORQUESTRA}} docs atualizar *)",
-      "Bash({{ORQUESTRA}} docs verificar *)",
+      "Bash({{DON}} delegar *)",
+      "Bash({{DON}} listar*)",
+      "Bash({{DON}} limpar *)",
+      "Bash({{DON}} relatorio*)",
+      "Bash({{DON}} checar*)",
+      "Bash({{DON}} resumir *)",
+      "Bash({{DON}} revisar *)",
+      "Bash({{DON}} briefing *)",
+      "Bash({{DON}} docs atualizar *)",
+      "Bash({{DON}} docs verificar *)",
       "Bash(git worktree list*)",
       "Bash(git merge --squash agente/*)",
-      "Edit(./.agentes/**)",
-      "Write(./.agentes/**)"
+      "Edit(./.don/**)",
+      "Write(./.don/**)"
     ],
     "ask": [
       "Bash(codex *)",

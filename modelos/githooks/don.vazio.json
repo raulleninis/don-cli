@@ -9,13 +9,13 @@
     "**/*.pem",
     "**/*.key"
   ],
-  "worktrees": "../{projeto}-agentes",
+  "worktrees": "../{projeto}-soldati",
   "links": [],
   "verificacao": [],
   "codex": {
     "modelo": "gpt-6.2-sol",
     "esforco": "high",
-    "perfil": "orquestra"
+    "perfil": "don"
   },
   "agy": {
     "modelo": "gemini-3.8-flash-high",

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { acharPor } from '../lib/resposta.mjs';
-import { conferirCitacao, fatiar } from '../lib/resumir.mjs';
+import { conferirCitacao, fatiar } from '../lib/consigliere/resumir.mjs';
 
 const doc = [
   '# Título',

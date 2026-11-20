@@ -7,11 +7,11 @@ import process from 'node:process';
 import { after, before, test } from 'node:test';
 import { rodar } from '../lib/processo.mjs';
 import { codexLimites } from '../lib/worker.mjs';
-import { apagar, orquestra, repoTemporario } from './ajuda.mjs';
+import { apagar, don, repoTemporario } from './ajuda.mjs';
 
 let pasta;
 before(() => {
-  pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'orquestra-vigias-'));
+  pasta = fs.mkdtempSync(path.join(os.tmpdir(), 'don-vigias-'));
 });
 after(() => fs.rmSync(pasta, { recursive: true, force: true }));
 
@@ -60,10 +60,10 @@ test('codexLimites: notify com a sentinela e orçamento de tokens com lembretes'
 test('hook do agy: Stop grava a sentinela; limite de passos só deixa entregar', () => {
   const raiz = repoTemporario({ 'package.json': '{}' });
   try {
-    orquestra(raiz, 'instalar');
+    don(raiz, 'instalar');
     const marcador = path.join(raiz, 'terminou.json');
     const contador = path.join(raiz, 'passos.txt');
-    const env = { ...process.env, ORQUESTRA_WORKER: '1', ORQUESTRA_SENTINELA: marcador, ORQUESTRA_LIMITE_PASSOS: '2', ORQUESTRA_CONTADOR: contador };
+    const env = { ...process.env, DON_SOLDATO: '1', DON_SENTINELA: marcador, DON_LIMITE_PASSOS: '2', DON_CONTADOR: contador };
     const chamar = (entrada) => JSON.parse(spawnSync(process.execPath, ['hooks/guarda.mjs'], { cwd: path.join(raiz, '.agents'), input: JSON.stringify({ workspacePaths: [raiz], ...entrada }), encoding: 'utf8', env }).stdout);
     const ler = { hookEventName: 'PreToolUse', toolCall: { name: 'view_file', args: { AbsolutePath: path.join(raiz, 'a.txt') } } };
     assert.equal(chamar(ler).decision, 'allow');
