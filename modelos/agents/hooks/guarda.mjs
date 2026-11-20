@@ -9,8 +9,8 @@ import process from 'node:process';
 import { CONFIG, RESERVADOS, motivo, normalizar } from '../../.githooks/caminhos.mjs';
 
 // Sem terminal (agy -p), `ask` vira negação e o worker termina sem resposta. Comandos que começam
-// por um prefixo de `agy.comandos` (testes, lint) e não encadeiam nada recebem `allow` e continuam
-// no sandbox do agy.
+// por um prefixo de `agy.comandos` (testes, lint) e não encadeiam nada recebem `auto_approve` e
+// continuam no sandbox do agy.
 const PERMITIDOS = (CONFIG.agy?.comandos ?? []).map((p) => normalizar(p).trim()).filter(Boolean);
 const ENCADEIA = /[;&|<>`]|\$\(|\r|\n/;
 const permitido = (cmd) =>
