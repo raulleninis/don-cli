@@ -157,8 +157,87 @@ orquestra delegar --motor agy --swarm --minutos 60 --briefing .agentes/briefings
 orquestra listar | orquestra limpar <slug> | orquestra relatorio | orquestra checar
 ```
 
-Opções de `delegar`: `--modo escrita|leitura`, `--modelo`, `--esforco`, `--slug`, `--base`
-(padrão `HEAD`), `--minutos` (30; swarm 60), `--swarm`, `--sem-verificacao`.
+Opções de `delegar`: `--modo escrita|leitura`, `--modelo` (o motor é deduzido do nome:
+`gpt-*` → Codex; `gemini-*`, `claude-*` → agy), `--esforco`, `--slug`, `--base` (padrão
+`HEAD`), `--minutos` (30; swarm 60), `--swarm`, `--sem-verificacao`, `--escalar`.
+
+### Escalonamento (`--escalar`)
+
+Começa pelo modelo pedido e, se a tentativa falhar por capacidade (sem resposta, `parcial`,
+verificação reprovada, saída diferente de zero), descarta a tentativa e repete no próximo degrau da
+escada (`codex.escada` / `agy.escada` no `orquestra.json`; padrão Codex `gpt-6-luna → gpt-6.2-sol →
+gpt-6.2-astra`, agy `gemini-3.8-flash-high → claude-sonnet-4-6 → claude-opus-4-6-thinking`). **Nunca
+escala** em `REJEITADO` (é segurança) nem em `bloqueado` (é dúvida, não incapacidade). O relatório
+mostra o caminho percorrido.
+
+### Revisão cruzada (`orquestra revisar <slug>`)
+
+O **outro fornecedor** revisa o diff da branch do agente antes de você: se o Codex escreveu, o agy
+revisa, e vice-versa (ou `--motor`/`--modelo`). Volta um veredito (`aprovar`, `corrigir`,
+`rejeitar`) e achados com arquivo, linha, **cenário concreto** e sugestão. Modelos de famílias
+diferentes erram coisas diferentes; você lê só o que sobrou. `--foco "<...>"` direciona.
+
+### Rascunho de briefing (`orquestra briefing --pedido "<...>"`)
+
+Um modelo barato explora o repositório (leitura) e rascunha o briefing no formato da skill:
+arquivos permitidos, onde olhar (`caminho:linhas`), critérios, comando de verificação, contexto e
+dúvidas abertas. Grava em `.agentes/briefings/<slug>.md` e avisa se listou área reservada como
+permitida. Você só revisa e ajusta, em vez de escrever do zero.
+
+## Ler contextos grandes (`orquestra resumir`)
+
+```bash
+orquestra resumir docs/ --foco "o que procuro" [--motor agy|codex] [--fatia 40000] [--paralelo 3]
+```
+
+1. **Fatia** os arquivos (cortando em títulos markdown), cada linha marcada com o número original.
+2. **Mapeia** cada fatia num modelo barato, em paralelo, numa pasta isolada (o leitor não vê o resto
+   do projeto). Cada item volta com `arquivo:linhas` e uma **citação literal**.
+3. **Confere** cada citação na fonte, perto das linhas indicadas: o que não bate leva ⚠.
+4. **Reduz**: o modelo barato agrupa tudo por tema e sem duplicatas (`SINTESE.md`); locais
+   inventados na síntese são descartados.
+
+Leia primeiro o `SINTESE.md` (poucos KB). Para conferir algo, vá direto às linhas citadas: é para
+isso que a localização existe. O `INDICE.md` tem todos os itens com citação. Fatias já lidas com o
+mesmo foco e modelo saem do **cache** (`.agentes/cache/resumos/`), sem gastar de novo
+(`--sem-cache` desliga; `--sem-sintese` pula a redução).
+
+Primeira rodada real (11 arquivos da documentação do Codex, 350 KB): 18 fatias, 260 itens,
+**251/260 citações conferidas**, zero fatias perdidas, só cota do Google.
+
+## Documentação local (`orquestra docs`) e MCP
+
+```bash
+orquestra docs baixar   --indice https://antigravity.google/llms.txt --pasta docs/Antigravity
+orquestra docs baixar   --indice https://learn.chatgpt.com/llms.txt  --pasta docs/Codex-oficial
+orquestra docs atualizar --pasta docs/Antigravity     # só o que mudou e o que é novo
+orquestra docs verificar --pasta docs/Antigravity     # compara com o servidor, não grava nada
+orquestra docs baixar --pasta docs/Antigravity --forcar   # baixa tudo de novo
+```
+
+Lê o índice `llms.txt` do site, fica com as páginas de `/docs/` do mesmo domínio e baixa a versão
+`.md` de cada uma. O manifesto `.fontes.json` guarda URL, `ETag`, `Last-Modified` e hash de cada
+página. O `atualizar` faz **requisições condicionais**: página que não mudou volta `304` sem
+conteúdo (114 páginas conferidas em 2 s). Relata novas, alteradas, iguais e removidas do índice
+(`--remover` apaga as removidas). `--filtro "<regex do caminho>"` restringe as seções e fica gravado.
+
+**Servidor MCP de documentação**, para o Claude (ou Codex, ou agy) consultar sob demanda em vez de
+carregar documentos no contexto:
+
+```bash
+claude mcp add orquestra-docs -- node <pacote>/bin/orquestra.mjs mcp-docs --pasta <docs1>,<docs2>
+```
+
+Ferramentas: `docs_listar`, `docs_buscar` (palavras na mesma linha ou `/regex/`; devolve
+`arquivo:linha` e trecho) e `docs_ler` (linhas numeradas, até 400 por leitura). Só lê dentro das
+pastas configuradas. Sem dependências: JSON-RPC sobre stdio. Combine com o `resumir`: a síntese
+diz *onde*, o MCP lê *só aquilo*.
+
+## Custos
+
+`orquestra relatorio` soma, por motor, modelo e modo, as delegações, o tempo, os **tokens
+informados por cada fornecedor** (o `usage` do agy e o "tokens used" do Codex) e os desfechos. É
+o que permite ajustar a tabela de quem faz o quê com números, não impressão.
 
 **A base é o `HEAD`.** Faça commit do que o worker precisa ver antes de delegar. Mudanças não
 commitadas não vão para a worktree.
@@ -246,7 +325,24 @@ Cada uma destas aconteceu nos testes e está tratada no código:
    engana um leitor ingênuo. A resposta real vem em `structured_output`.
 6. **A verificação do projeto inteiro reprova tudo** quando o projeto já tem dívida de lint.
    Verifique o que mudou (`{arquivos}`, `--changed {base}`).
-7. **Junction e `.gitignore`:** `node_modules/` (com barra) só casa diretório, e a junction poderia
+7. **Segredos no ambiente do Codex.** `shell_environment_policy.ignore_default_excludes` vem
+   `true` por padrão e **mantém** variáveis com `KEY`, `SECRET` ou `TOKEN` no ambiente dos comandos
+   do worker. A orquestra passa `false`, e também desliga memórias (`memories.generate_memories` e
+   `memories.use_memories`) e conectores (`features.apps`) nos workers.
+8. **`codex exec -s read-only` no Windows nega até abrir o shell**, e o Codex lê arquivos pelo
+   shell: o revisor "não conseguia ler o diff". Leitura agora roda em pasta descartável com o perfil
+   do projeto (ou `workspace-write`), e diff e fatias vão dentro do prompt.
+9. **Um neto do agy segurava a saída** (um terminal que o worker abriu): o processo terminava, mas
+   o pipe não fechava e a orquestra esperava para sempre. Agora ela conclui 2 s depois que o
+   processo principal sai e encerra a árvore.
+10. **Uma ação negada perto do fim faz o agy terminar sem resposta** (ex.: o modelo barato tentou ler
+   `.git/worktrees/...`, fora da área). O preâmbulo proíbe `.git` e manda entregar mesmo depois de
+   uma negativa; revisão e briefing tentam de novo uma vez, avisando o worker.
+11. **Respostas do agy sobre o próprio agy erram.** Ele disse que `command(node)` liberava por
+   prefixo e que existia `"permissions": {"command": [...]}`; a documentação oficial
+   (`docs/hooks.md`, `docs/permissions.md`) disse outra coisa. Consulte a fonte (é para isso que existe
+   o `orquestra docs`).
+12. **Junction e `.gitignore`:** `node_modules/` (com barra) só casa diretório, e a junction poderia
    entrar no commit do worker. A orquestra acrescenta `/node_modules` ao `.git/info/exclude`.
 
 ## Solução de problemas
@@ -282,9 +378,9 @@ trecho do `AGENTS.md` e as permissões no `.claude/settings.json`. Remova as wor
 
 ```
 bin/orquestra.mjs      CLI
-lib/                   delegar, instalar, processo (spawn seguro), resposta (JSON), codex (confiança)
+lib/                   delegar (+ revisar, briefing, escalar), worker, worktree, resumir, docs, mcp-docs, instalar, processo, resposta, codex
 modelos/               o que o instalar copia para o projeto
-test/                  node --test (31 testes: globs, hook, pre-commit, perfil, resposta, confiança)
+test/                  node --test (43 testes: globs, hook, pre-commit, perfil, resposta, confiança, fatias e citações, docs com ETag, MCP, tokens, escalonamento)
 ```
 
 `npm test` roda tudo, sem dependências.

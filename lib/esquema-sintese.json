@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["temas", "lacunas"],
+  "properties": {
+    "temas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["tema", "resumo", "relevancia", "locais"],
+        "properties": {
+          "tema": { "type": "string" },
+          "resumo": { "type": "string" },
+          "relevancia": { "type": "string", "enum": ["alta", "media", "baixa"] },
+          "locais": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "lacunas": { "type": "array", "items": { "type": "string" } }
+  }
+}

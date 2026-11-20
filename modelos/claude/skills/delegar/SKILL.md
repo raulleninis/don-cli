@@ -51,6 +51,28 @@ orquestra delegar --motor agy --swarm --minutos 60 --briefing .agentes/briefings
 Tarefa longa: rode com `run_in_background` e siga trabalhando. A base é o `HEAD`: **faça commit do
 que o worker precisa ver antes de delegar.**
 
+- `--escalar`: começa barato e sobe a escada de modelos só se falhar por capacidade (nunca em
+  `REJEITADO` ou `bloqueado`). Bom padrão para tarefa mecânica: `--modelo gpt-6-luna --escalar`.
+- `orquestra briefing --pedido "<...>" --slug <nome>`: um modelo barato rascunha o briefing
+  explorando o repositório. Revise o rascunho em vez de escrever do zero.
+- `orquestra revisar <slug>`: o outro fornecedor revisa o diff antes de você (achados com cenário).
+
+## Ler muito, gastar pouco
+
+Antes de ler documentação ou código extensos no seu contexto:
+
+```bash
+orquestra resumir <pastas|arquivos> --foco "<o que você procura>"
+```
+
+Leia o `SINTESE.md` que ele aponta (temas com `arquivo:linhas`). Para conferir, leia **só** as linhas
+citadas. O `INDICE.md` tem cada item com citação literal conferida (⚠ = não conferida). Fatias já
+lidas saem do cache.
+
+Documentação de ferramentas fica local (`orquestra docs atualizar --pasta <...>` só baixa o que
+mudou). Se o MCP `orquestra-docs` estiver configurado, use `docs_buscar` → `docs_ler` em vez de abrir
+arquivos inteiros.
+
 ## Depois
 
 O relatório traz status, resumo e dúvidas do worker, diffstat e a verificação do
@@ -78,4 +100,5 @@ Gasta muita cota. Só para trabalho de verdade paralelo e sem arquivos em comum:
 área por worker, divisão explícita no briefing (`@nome: arquivos e tarefa`). Verifier, monitor e
 narrator só existem se você pedir. A verificação final é a sua.
 
-O registro de cada delegação fica em `.agentes/registro.jsonl`; `orquestra relatorio` resume.
+O registro de cada delegação fica em `.agentes/registro.jsonl`; `orquestra relatorio` resume, com
+os tokens que cada fornecedor informa.

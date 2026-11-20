@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["panorama", "itens"],
+  "properties": {
+    "panorama": { "type": "string" },
+    "itens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["titulo", "resumo", "relevancia", "linhas", "trecho"],
+        "properties": {
+          "titulo": { "type": "string" },
+          "resumo": { "type": "string" },
+          "relevancia": { "type": "string", "enum": ["alta", "media", "baixa"] },
+          "linhas": { "type": "string" },
+          "trecho": { "type": "string" }
+        }
+      }
+    }
+  }
+}

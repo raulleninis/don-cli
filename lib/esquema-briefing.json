@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["titulo", "objetivo", "referencias", "arquivos_permitidos", "arquivos_contexto", "criterios", "fora_do_escopo", "verificar", "contexto", "duvidas"],
+  "properties": {
+    "titulo": { "type": "string" },
+    "objetivo": { "type": "string" },
+    "referencias": { "type": "array", "items": { "type": "string" } },
+    "arquivos_permitidos": { "type": "array", "items": { "type": "string" } },
+    "arquivos_contexto": { "type": "array", "items": { "type": "string" } },
+    "criterios": { "type": "array", "items": { "type": "string" } },
+    "fora_do_escopo": { "type": "array", "items": { "type": "string" } },
+    "verificar": { "type": "string" },
+    "contexto": { "type": "string" },
+    "duvidas": { "type": "array", "items": { "type": "string" } }
+  }
+}
