@@ -42,7 +42,39 @@ process.stdin.on('end', () => {
   } catch {
     responder('deny', 'orquestra: entrada do hook ilegível.');
   }
+  // Evento Stop: sentinela de conclusão para a orquestra (o processo deveria sair logo depois).
+  if (entrada.hookEventName === 'Stop') {
+    if (process.env.ORQUESTRA_SENTINELA) {
+      try {
+        fs.writeFileSync(process.env.ORQUESTRA_SENTINELA, JSON.stringify({
+          quando: new Date().toISOString(), motivo: entrada.terminationReason ?? null, ocioso: entrada.fullyIdle ?? null,
+        }));
+      } catch {
+        /* sem marcador, valem os outros limites */
+      }
+    }
+    responder('stop');
+  }
+
   const nome = String(entrada.toolCall?.name ?? '');
+  // Limite de passos (contra loop): passou do teto, só a entrega da resposta final passa.
+  if (process.env.ORQUESTRA_LIMITE_PASSOS && process.env.ORQUESTRA_CONTADOR) {
+    let passos = 0;
+    try {
+      passos = Number(fs.readFileSync(process.env.ORQUESTRA_CONTADOR, 'utf8')) || 0;
+    } catch {
+      /* primeiro passo */
+    }
+    passos += 1;
+    try {
+      fs.writeFileSync(process.env.ORQUESTRA_CONTADOR, String(passos));
+    } catch {
+      /* segue sem contar */
+    }
+    if (passos > Number(process.env.ORQUESTRA_LIMITE_PASSOS) && !/^(?:finish|final|submit|respond)/i.test(nome)) {
+      responder('deny', `Limite de ${process.env.ORQUESTRA_LIMITE_PASSOS} passos atingido. Pare agora e entregue a resposta final com o que tem, registrando o que faltou.`);
+    }
+  }
   // O agy às vezes entrega cada argumento como string JSON (com aspas): desembrulha.
   const args = Object.fromEntries(
     Object.entries(entrada.toolCall?.args ?? {}).map(([k, v]) => {

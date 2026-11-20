@@ -11,6 +11,13 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "node hooks/guarda.mjs",
+        "timeout": 10
+      }
     ]
   }
 }

@@ -48,3 +48,15 @@ test('acharPor: resumo dentro do envelope do agy', () => {
   const envelope = { status: 'SUCCESS', json_schema: { properties: { itens: {}, panorama: {} } }, structured_output: r };
   assert.deepEqual(acharPor(`aviso\n${JSON.stringify(envelope)}`, (v) => Array.isArray(v.itens) && typeof v.panorama === 'string'), r);
 });
+
+test('acharPor: resposta grande com JSON aninhado em texto não trava (tempo linear)', () => {
+  const pred = (v) => Array.isArray(v.itens) && typeof v.panorama === 'string';
+  const itens = Array.from({ length: 400 }, (_, i) => ({ titulo: `t${i} {a} {"b": 1}`, resumo: '{x}'.repeat(20), relevancia: 'alta', linhas: '1-2', trecho: '{ }' }));
+  const resposta = { panorama: 'p', itens };
+  const envelope = { status: 'SUCCESS', response: JSON.stringify(resposta), structured_output: resposta, json_schema: { properties: { itens: {} } } };
+  const texto = `aviso { solto\n${JSON.stringify(envelope)}\n`;
+  const inicio = Date.now();
+  assert.equal(acharPor(texto, pred).itens.length, 400);
+  assert.equal(acharPor(`lixo {{{{ ${'{'.repeat(5000)} sem json`, pred), null);
+  assert.ok(Date.now() - inicio < 2000, `levou ${Date.now() - inicio} ms`);
+});

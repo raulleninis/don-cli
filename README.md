@@ -233,6 +233,22 @@ Ferramentas: `docs_listar`, `docs_buscar` (palavras na mesma linha ou `/regex/`;
 pastas configuradas. Sem dependências: JSON-RPC sobre stdio. Combine com o `resumir`: a síntese
 diz *onde*, o MCP lê *só aquilo*.
 
+## Contra ficar preso
+
+Quatro proteções, cada uma para um tipo de problema, todas configuráveis em `codex`/`agy` no
+`orquestra.json`:
+
+| Proteção | Contra | Como | Padrão |
+|---|---|---|---|
+| Tempo total | qualquer coisa | `--minutos`; encerra a árvore de processos | 30 min (swarm 60) |
+| Inatividade | trava silenciosa | log do worker (Codex) ou do hook (agy, uma linha por ferramenta) parado → encerra | `inativo_minutos: 8` |
+| Orçamento de tokens (Codex) | loop que gasta sem parar | `features.rollout_budget` com lembretes a 25% e 10% do fim (experimental no Codex) | `limite_tokens: 400000` |
+| Limite de passos (agy) | loop de ferramentas | o hook conta as ferramentas; passou do teto, só deixa entregar a resposta | `limite_passos: 150` (swarm ×4) |
+| Sentinela de conclusão | processo que terminou mas não sai | `notify` do Codex e evento `Stop` do agy gravam um marcador; vivo 20 s depois → encerra e segue | sempre |
+
+O relatório diz qual proteção agiu (`Worker interrompido: ...`). Para diagnosticar, rode com
+`ORQUESTRA_DEBUG=1`: cada início, saída e interrupção de processo vai para o stderr com horário.
+
 ## Custos
 
 `orquestra relatorio` soma, por motor, modelo e modo, as delegações, o tempo, os **tokens
@@ -342,7 +358,12 @@ Cada uma destas aconteceu nos testes e está tratada no código:
    prefixo e que existia `"permissions": {"command": [...]}`; a documentação oficial
    (`docs/hooks.md`, `docs/permissions.md`) disse outra coisa. Consulte a fonte (é para isso que existe
    o `orquestra docs`).
-12. **Junction e `.gitignore`:** `node_modules/` (com barra) só casa diretório, e a junction poderia
+12. **A busca do JSON na resposta travava a CPU por minutos.** Ela tentava interpretar a partir de
+   cada `{` e recomeçava em todo texto com JSON dentro: com a resposta grande do agy, o tempo
+   explodia. Com a CPU presa, nenhum evento era atendido, nem o limite de tempo: as tarefas pareciam
+   "paradas" sem processo filho. Agora a busca é linear (texto inteiro, depois linha a linha, varredura
+   só como último recurso e com teto), com teste de desempenho.
+13. **Junction e `.gitignore`:** `node_modules/` (com barra) só casa diretório, e a junction poderia
    entrar no commit do worker. A orquestra acrescenta `/node_modules` ao `.git/info/exclude`.
 
 ## Solução de problemas
