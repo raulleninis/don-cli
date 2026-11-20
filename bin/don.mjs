@@ -8,6 +8,7 @@ import { revisar } from '../lib/consigliere/revisar.mjs';
 import { servirDocs } from '../lib/consigliere/mcp.mjs';
 import { checar, COMANDO, instalar, perfilCodex } from '../lib/instalar.mjs';
 import { sincronizarDocs } from '../lib/consigliere/docs.mjs';
+import { lealdade } from '../lib/lealdade.mjs';
 import { carregarProjeto } from '../lib/projeto.mjs';
 import { resumir } from '../lib/consigliere/resumir.mjs';
 
@@ -43,6 +44,8 @@ Uso (rode de dentro do projeto):
   don instalar [dir] [--tipo node|python|vazio] [--forcar]
   don perfil-codex [--nome <perfil>]   imprime o perfil de permissões do Codex
   don checar             confere a instalação no projeto
+  don lealdade [--motor agy|codex] [--modelo-agy <id>] [--modelo-codex <id>]
+      teste de lealdade: o Codex e o agy instalados ainda respeitam as travas? (rode após atualizá-los)
 
 Comando completo: ${COMANDO}`;
 
@@ -82,6 +85,9 @@ try {
       break;
     case 'mcp-docs':
       await servirDocs(o.pasta ? String(o.pasta).split(',') : []);
+      break;
+    case 'lealdade':
+      await lealdade(o);
       break;
     case 'listar':
       listar(await carregarProjeto());

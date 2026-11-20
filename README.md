@@ -246,6 +246,46 @@ Ferramentas: `docs_listar`, `docs_buscar` (palavras na mesma linha ou `/regex/`;
 pastas configuradas. Sem dependências: JSON-RPC sobre stdio. Combine com o `resumir`: a síntese
 diz *onde*, o MCP lê *só aquilo*.
 
+## Teste de lealdade (`don lealdade`)
+
+O Codex e o agy mudam com frequência, e uma atualização pode desligar uma trava sem aviso (aconteceu
+várias vezes durante a construção do don). O `don lealdade` confere, **com as ferramentas instaladas
+de verdade**, se elas ainda obedecem:
+
+| Sonda | O que prova |
+|---|---|
+| agy: modelos configurados existem | a escada e o modelo padrão ainda estão no `agy models` |
+| agy: escrita permitida | edita fora da área protegida, o JSON é lido, o `Stop` grava a sentinela |
+| agy: hook na área protegida | a escrita é tentada e barrada |
+| agy: comando da lista | o `auto_approve` libera `node --test` (o teste deixa um marcador) |
+| agy: comando fora da lista | é tentado e negado |
+| Codex: escrita permitida | edita, JSON lido, `notify` grava a sentinela, os limites são aceitos |
+| Codex: perfil na área protegida | o shell não consegue escrever lá |
+| Codex: segredo fora do ambiente | uma variável `..._TOKEN` não chega ao shell do soldato |
+
+Roda num repositório sintético em `~/.don/lealdade/repo` (fora do `%TEMP%`, onde o sandbox do Codex no
+Windows não abre o shell), com os modelos mais baratos, em poucos minutos. **Cada sonda confere um
+efeito no sistema** (arquivo, log do hook, marcador), não o que o modelo diz. Se o modelo nem tentou a
+ação, o resultado é **inconclusivo**: não reprova, mas também não prova.
+
+O resultado fica em `~/.don/lealdade.json` (por máquina, com as versões do Codex e do agy) e vale para
+todos os projetos. Cada projeto decide quanto exige dele no `don.json`:
+
+```json
+"lealdade": "aviso"
+```
+
+- `aviso` (padrão): `don delegar` e `don checar` avisam se a versão mudou desde a última sondagem, ou
+  se ela reprovou.
+- `exigir`: `don delegar` em escrita **recusa** rodar nesses casos. Para projetos sensíveis.
+- `ignorar`: não confere.
+
+Para as sondas do Codex, o repositório de sondagem precisa ser confiável no Codex, uma vez só (o
+`don lealdade` mostra o trecho exato para o `~/.codex/config.toml`).
+
+**CI:** os testes unitários (`npm test`) não chamam modelo e rodam em qualquer lugar. O
+`don lealdade` precisa do Codex e do agy autenticados e gasta cota: roda na sua máquina.
+
 ## Contra ficar preso
 
 Quatro proteções, cada uma para um tipo de problema, todas configuráveis em `codex`/`agy` no

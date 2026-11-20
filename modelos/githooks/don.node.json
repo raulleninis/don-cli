@@ -1,5 +1,6 @@
 {
   "projeto": "{{PROJETO}}",
+  "lealdade": "aviso",
   "protegidos": {},
   "reservados": {
     "package.json": "Dependências só mudam com autorização humana.",

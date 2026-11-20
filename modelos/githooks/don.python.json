@@ -1,5 +1,6 @@
 {
   "projeto": "{{PROJETO}}",
+  "lealdade": "aviso",
   "protegidos": {},
   "reservados": {
     "pyproject.toml": "Dependências e configuração só mudam com autorização humana.",

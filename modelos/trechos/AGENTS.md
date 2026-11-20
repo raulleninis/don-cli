@@ -9,7 +9,7 @@ em `.githooks/don.json` (ativo com `git config core.hooksPath .githooks`).
 ### Claude Code
 
 - Orquestra: entende o pedido, divide o trabalho, delega, revisa o diff e faz o commit. Delegação
-  para Codex e `agy` passa pela skill `delegar`, nunca por chamada solta.
+  para Codex e `agy` passa pela skill `don`, nunca por chamada solta.
 - Nunca use `--no-verify` nem `LIBERA_CAMINHO_PROTEGIDO`: a liberação é humana.
 
 ### Codex

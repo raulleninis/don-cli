@@ -1,9 +1,9 @@
 ---
-name: delegar
-description: Delegar trabalho a Codex (OpenAI) ou Antigravity/agy (Gemini) pelo don, ou a subagentes Claude mais baratos, para poupar a cota do Opus. Use ao decidir quem executa uma tarefa, uma reescrita mecânica, uma busca, uma segunda opinião ou um swarm.
+name: don
+description: Você é o don, quem dá as ordens. Delegar trabalho a Codex (OpenAI) ou Antigravity/agy (Gemini) pelo don, ou a subagentes Claude mais baratos, para poupar a cota do Opus. Use ao decidir quem executa uma tarefa, uma reescrita mecânica, uma busca, uma segunda opinião ou um swarm.
 ---
 
-# Delegar
+# Don
 
 O Opus don: entende o pedido, divide o trabalho, escreve o briefing, revisa o diff e faz o
 commit. O resto vai para quem custa menos e serve. As áreas reservadas do projeto
