@@ -46,14 +46,15 @@ test('processo normal: nenhum vigia age', async () => {
 });
 
 test('codexLimites: notify com a sentinela e orçamento de tokens com lembretes', () => {
-  const args = codexLimites({ limite_tokens: 100_000 }, 'C:\\x\\terminou.json');
+  const args = codexLimites({ limite_tokens: 100_000, limite_saida_ferramenta: 6000 }, 'C:\\x\\terminou.json');
   const valores = args.filter((_, i) => i % 2 === 1);
   const notify = valores.find((v) => v.startsWith('notify='));
   assert.deepEqual(JSON.parse(notify.slice('notify='.length)).at(-1), 'C:\\x\\terminou.json');
+  assert.ok(valores.includes('tool_output_token_limit=6000'));
   assert.ok(valores.includes('features.rollout_budget.enabled=true'));
   assert.ok(valores.includes('features.rollout_budget.limit_tokens=100000'));
   assert.ok(valores.includes('features.rollout_budget.reminder_at_remaining_tokens=[25000,10000]'));
-  assert.equal(codexLimites({ limite_tokens: null }, 'm').length, 2, 'sem limite, só o notify');
+  assert.equal(codexLimites({ limite_tokens: null, limite_saida_ferramenta: null }, 'm').length, 2, 'sem limites, só o notify');
 });
 
 test('hook do agy: Stop grava a sentinela; limite de passos só deixa entregar', () => {

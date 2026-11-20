@@ -84,3 +84,13 @@ test('baixar, atualizar (304), alteração, página nova, verificar sem gravar, 
   assert.equal(r8.novas.length, 2, '--forcar baixa tudo de novo');
   Object.assign(console, silencio);
 });
+
+test('filtro: desfaz a conversão de caminho do Git Bash (MSYS)', async () => {
+  const destino = fs.mkdtempSync(path.join(os.tmpdir(), 'orquestra-filtro-'));
+  try {
+    const r = await sincronizarDocs({ acao: 'verificar', indice: `${base}/llms.txt`, pasta: destino, filtro: '^C:/Program Files/Git/docs/b' });
+    assert.deepEqual([...r.novas, ...r.alteradas, ...r.iguais], ['b.md']);
+  } finally {
+    fs.rmSync(destino, { recursive: true, force: true });
+  }
+});

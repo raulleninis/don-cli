@@ -210,6 +210,7 @@ Primeira rodada real (11 arquivos da documentação do Codex, 350 KB): 18 fatias
 ```bash
 orquestra docs baixar   --indice https://antigravity.google/llms.txt --pasta docs/Antigravity
 orquestra docs baixar   --indice https://learn.chatgpt.com/llms.txt  --pasta docs/Codex-oficial
+orquestra docs baixar   --indice https://code.claude.com/llms.txt   --pasta docs/ClaudeCode --filtro "^/docs/en/"
 orquestra docs atualizar --pasta docs/Antigravity     # só o que mudou e o que é novo
 orquestra docs verificar --pasta docs/Antigravity     # compara com o servidor, não grava nada
 orquestra docs baixar --pasta docs/Antigravity --forcar   # baixa tudo de novo
@@ -219,7 +220,13 @@ Lê o índice `llms.txt` do site, fica com as páginas de `/docs/` do mesmo dom�
 `.md` de cada uma. O manifesto `.fontes.json` guarda URL, `ETag`, `Last-Modified` e hash de cada
 página. O `atualizar` faz **requisições condicionais**: página que não mudou volta `304` sem
 conteúdo (114 páginas conferidas em 2 s). Relata novas, alteradas, iguais e removidas do índice
-(`--remover` apaga as removidas). `--filtro "<regex do caminho>"` restringe as seções e fica gravado.
+(`--remover` apaga as removidas). `--filtro "<regex do caminho>"` restringe as seções e fica gravado
+no manifesto (no Git Bash, `^/docs/...` vira `^C:/Program Files/Git/docs/...`; a orquestra desfaz).
+Servidores sem `ETag` (como o do Claude Code) respondem 304 pelo `Last-Modified`.
+
+O pacote versiona três referências: `docs/Antigravity` (114 páginas), `docs/Codex-oficial` (202,
+inclui o `codex-manual.md` condensado) e `docs/ClaudeCode` (205). Cada pasta tem `FONTES.md` (de onde
+veio cada arquivo) e `.fontes.json` (o manifesto da atualização).
 
 **Servidor MCP de documentação**, para o Claude (ou Codex, ou agy) consultar sob demanda em vez de
 carregar documentos no contexto:
@@ -242,6 +249,7 @@ Quatro proteções, cada uma para um tipo de problema, todas configuráveis em `
 |---|---|---|---|
 | Tempo total | qualquer coisa | `--minutos`; encerra a árvore de processos | 30 min (swarm 60) |
 | Inatividade | trava silenciosa | log do worker (Codex) ou do hook (agy, uma linha por ferramenta) parado → encerra | `inativo_minutos: 8` |
+| Saída de comando (Codex) | log enorme que encarece e confunde o worker | `tool_output_token_limit`: quanto de cada saída entra no contexto | `limite_saida_ferramenta: 6000` |
 | Orçamento de tokens (Codex) | loop que gasta sem parar | `features.rollout_budget` com lembretes a 25% e 10% do fim (experimental no Codex) | `limite_tokens: 400000` |
 | Limite de passos (agy) | loop de ferramentas | o hook conta as ferramentas; passou do teto, só deixa entregar a resposta | `limite_passos: 150` (swarm ×4) |
 | Sentinela de conclusão | processo que terminou mas não sai | `notify` do Codex e evento `Stop` do agy gravam um marcador; vivo 20 s depois → encerra e segue | sempre |
