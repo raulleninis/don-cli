@@ -1,2 +1,5 @@
 node_modules/
 .agentes/
+
+# Documentação de terceiros: montada em cada máquina com `docs baixar` (não publicar cópias).
+docs/
