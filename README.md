@@ -76,7 +76,37 @@ commit`). **Reservado** é o que agente externo nunca toca: inclui os protegidos
 - Codex CLI (`npm i -g @openai/codex`) e/ou Antigravity CLI (`agy`), autenticados.
 - No Windows, criar junction não precisa de administrador.
 
-## Instalar num projeto
+## Começando: `don configurar`
+
+```bash
+git clone <don-cli> && cd <projeto>
+node <don-cli>/bin/don.mjs configurar
+```
+
+Detecta o ambiente (Node, Codex, agy, Claude Code) e faz poucas perguntas, todas com padrão:
+
+| Pergunta | O que ajusta |
+|---|---|
+| Quais CLIs executam ordens? | `motores` da máquina (`~/.don/config.json`) e do projeto: o don só usa o que existe. Com uma CLI só, a revisão cruzada usa outro modelo da mesma CLI |
+| Instalar as que faltam? | roda o instalador oficial (mostra o comando antes; só com "s") |
+| Perfil de custo: economia, equilíbrio ou qualidade | modelo inicial, esforço, escada de escalonamento e limites de tokens/passos de cada CLI |
+| O projeto é sensível? | `lealdade: exigir` (delegar só com teste de lealdade aprovado) ou `aviso` |
+| Áreas protegidas | `protegidos` (sugere pastas com cara de sensível: `crypto`, `auth`, `migrations`...) |
+| Integrar ao projeto? | trecho no `AGENTS.md`, `@AGENTS.md` no `CLAUDE.md`, permissões mescladas no `.claude/settings.json`, perfil do Codex |
+| Confiar no projeto no Codex? | acrescenta o projeto ao `~/.codex/config.toml` (só com "s") |
+| Documentação e MCP? | baixa a documentação oficial das CLIs ativas e do Claude Code em `~/.don/docs` e registra o MCP `consigliere` |
+| Rodar o teste de lealdade? | `don lealdade` com as CLIs escolhidas |
+
+Termina com o que foi feito e o que falta (login de uma CLI, `node_modules` ausente, trava do git).
+Rodar de novo atualiza a configuração mantendo o que você já ajustou no `don.json`. Sem terminal
+(automação, CI): `--sim` aceita os padrões; `--respostas respostas.json` responde por chave
+(`motores`, `perfil`, `sensivel`, `protegidos`, `integrar`, `confiar_codex`, `docs`, `lealdade`,
+`instalar_<cli>`, `substituir_config`).
+
+Novas CLIs entram por `lib/motores.mjs` (detecção, instalação, documentação, modelos por perfil) mais
+o ponto de integração em `lib/worker.mjs` (como rodá-la sem terminal).
+
+## Instalação manual (o que o `configurar` faz por você)
 
 ```bash
 # 1. Copia hooks, configuração, skill e agente para o projeto (não sobrescreve o que existe)

@@ -8,11 +8,14 @@ import { revisar } from '../lib/consigliere/revisar.mjs';
 import { servirDocs } from '../lib/consigliere/mcp.mjs';
 import { checar, COMANDO, instalar, perfilCodex } from '../lib/instalar.mjs';
 import { sincronizarDocs } from '../lib/consigliere/docs.mjs';
+import { configurar } from '../lib/configurar.mjs';
 import { lealdade } from '../lib/lealdade.mjs';
 import { carregarProjeto } from '../lib/projeto.mjs';
 import { resumir } from '../lib/consigliere/resumir.mjs';
 
 const AJUDA = `don — delegação de tarefas do Claude para Codex e agy
+
+Começando: don configurar   (detecta as CLIs, pergunta pouco e deixa máquina e projeto prontos)
 
 Uso (rode de dentro do projeto):
   don delegar --motor codex|agy --briefing <arquivo.md> [opções]
@@ -41,6 +44,9 @@ Uso (rode de dentro do projeto):
   don listar             worktrees de soldati abertas
   don limpar <slug>      remove worktree e branch (desfaz as junctions antes)
   don relatorio          resumo de .don/registro.jsonl
+  don configurar [dir] [--sim] [--respostas <arquivo.json>]
+      configuração guiada: CLIs ativas, instalação, perfil de custo, sensibilidade, áreas protegidas,
+      integração (AGENTS.md, CLAUDE.md, permissões, perfil do Codex), docs + MCP e lealdade
   don instalar [dir] [--tipo node|python|vazio] [--config <don.json pronto>] [--forcar]
   don perfil-codex [--nome <perfil>]   imprime o perfil de permissões do Codex
   don checar             confere a instalação no projeto
@@ -54,7 +60,7 @@ function opcoes(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith('--')) o._.push(a);
-    else if (['swarm', 'sem-verificacao', 'forcar', 'ajuda'].includes(a.slice(2))) o[a.slice(2)] = true;
+    else if (['swarm', 'sem-verificacao', 'forcar', 'ajuda', 'sim', 'sem-cache', 'sem-sintese', 'escalar', 'remover'].includes(a.slice(2))) o[a.slice(2)] = true;
     else o[a.slice(2)] = argv[++i];
   }
   return o;
@@ -85,6 +91,9 @@ try {
       break;
     case 'mcp-docs':
       await servirDocs(o.pasta ? String(o.pasta).split(',') : []);
+      break;
+    case 'configurar':
+      await configurar(o._[0], o);
       break;
     case 'lealdade':
       await lealdade(o);
