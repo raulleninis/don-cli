@@ -88,11 +88,12 @@ process.stdin.on('end', () => {
       if (solto.test(comando)) responder('deny', `Bloqueado pela orquestra: comando que escreve em área reservada. ${porque}`);
     }
   }
-  // Worker da orquestra (agy -p com `command(*)` liberado): a lista `agy.comandos` vale aqui —
-  // fora dela, nega. Sessão interativa: comando fora da lista segue o fluxo normal (pergunta).
-  // Edição de arquivo dentro da área de trabalho, fora das áreas reservadas, passa.
+  // Comando da lista `agy.comandos`: `auto_approve` (docs/hooks: aprova o que a política padrão
+  // perguntaria, respeitando as regras do usuário). `allow` NÃO aprova: só passa à política padrão,
+  // que em `agy -p` nega. Worker da orquestra (ORQUESTRA_WORKER=1): fora da lista, nega. Sessão
+  // interativa: fora da lista, pergunta. Edição de arquivo fora das áreas reservadas segue o fluxo.
   if (comando) {
-    if (permitido(comando.trim())) responder('allow');
+    if (permitido(comando.trim())) responder('auto_approve');
     if (process.env.ORQUESTRA_WORKER === '1') {
       responder('deny', `Bloqueado pela orquestra: comando fora de agy.comandos ou encadeado. Não contorne; registre em duvidas se precisar dele.`);
     }

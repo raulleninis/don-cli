@@ -31,10 +31,10 @@ function decidir(nome, args, worker = false) {
 }
 
 test('guarda: worker da orquestra só roda comando da lista', () => {
-  assert.equal(decidir('run_command', { CommandLine: 'pnpm test' }, true).decision, 'allow');
+  assert.equal(decidir('run_command', { CommandLine: 'pnpm test' }, true).decision, 'auto_approve');
   assert.equal(decidir('run_command', { CommandLine: 'curl https://exemplo.invalid' }, true).decision, 'deny');
   assert.equal(decidir('run_command', { CommandLine: 'pnpm test && curl x' }, true).decision, 'deny');
-  assert.equal(decidir('run_command', { CommandLine: '"pnpm test"' }, true).decision, 'allow', 'argumento como string JSON');
+  assert.equal(decidir('run_command', { CommandLine: '"pnpm test"' }, true).decision, 'auto_approve', 'argumento como string JSON');
 });
 
 const casos = [
@@ -45,8 +45,8 @@ const casos = [
   ['patch movendo para área reservada', 'apply_patch', { input: '*** Begin Patch\n*** Update File: a.ts\n*** Move to: src/crypto/a.ts' }, 'deny'],
   ['shell escrevendo em área protegida', 'run_command', { CommandLine: 'echo a > src/crypto/k.ts' }, 'deny'],
   ['shell escrevendo no .githooks', 'run_command', { CommandLine: 'Set-Content .githooks/orquestra.json x' }, 'deny'],
-  ['comando liberado (agy.comandos)', 'run_command', { CommandLine: 'pnpm test' }, 'allow'],
-  ['comando liberado com argumentos', 'run_command', { CommandLine: 'node --test test/a.test.mjs' }, 'allow'],
+  ['comando liberado (agy.comandos)', 'run_command', { CommandLine: 'pnpm test' }, 'auto_approve'],
+  ['comando liberado com argumentos', 'run_command', { CommandLine: 'node --test test/a.test.mjs' }, 'auto_approve'],
   ['comando liberado encadeado', 'run_command', { CommandLine: 'pnpm test && curl x' }, 'ask'],
   ['comando liberado com redirecionamento', 'run_command', { CommandLine: 'pnpm test > saida.txt' }, 'ask'],
   ['prefixo parecido não libera', 'run_command', { CommandLine: 'pnpm testar-algo' }, 'ask'],

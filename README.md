@@ -142,7 +142,7 @@ Depois, siga os passos que o `instalar` imprime:
 | `verificacao` | Roda na worktree depois do worker. `{arquivos}` vira os arquivos alterados (filtrados por `extensoes`; a etapa é pulada se não sobrar nenhum); `{base}` vira o commit base. `node` é o Node atual; caminho com `/` é relativo à worktree. **Prefira verificar só o que mudou**: se o projeto já tem dívida de lint, verificar tudo marca toda delegação como falha. |
 | `links` | Pastas pesadas reaproveitadas por junction em vez de instalar. Só funciona se a base tiver o mesmo lockfile que o `HEAD` (o `delegar` confere). |
 | `codex.perfil` | Nome do perfil no `.codex/config.toml`. `null` roda com `-s workspace-write` e só a checagem do diff protege: não recomendado. |
-| `agy.comandos` | Prefixos de comando que um worker do agy pode rodar (testes, lint). Fora deles, e qualquer encadeamento (`;`, `&&`, `\|`, `>`, `$(`), o hook nega. |
+| `agy.comandos` | Prefixos de comando que um worker do agy pode rodar (testes, lint): o hook responde `auto_approve`. Fora deles, e em qualquer encadeamento (`;`, `&&`, `\|`, `>`, `$(`), o hook nega no worker e pergunta numa sessão interativa sua. |
 
 Há modelos prontos para Node (`orquestra.node.json`), Python (`orquestra.python.json`) e vazio. O
 `instalar` escolhe pelo que encontra no projeto, ou use `--tipo`.
@@ -236,10 +236,12 @@ Cada uma destas aconteceu nos testes e está tratada no código:
    worktree de agente, e remova só com `orquestra limpar`.
 3. **Instalar dependências na worktree travou.** Com o store do pnpm no C: e o projeto no E:,
    não há hardlink e o pnpm copia tudo; ficou 10 minutos parado. Daí as junctions.
-4. **O agy em `-p` nega sozinho todo comando que pediria permissão**, e o worker termina **sem
-   resposta final**. As regras de `--settings` só casaram o comando exato ou `command(*)` (o
-   prefixo não). A orquestra libera `command(*)` e quem filtra é o hook, com a lista
-   `agy.comandos`.
+4. **O agy em `-p` nega sozinho todo comando que pediria permissão** ("soft-denied") e o worker
+   termina **sem resposta final**. No hook, `allow` **não aprova**: só passa a decisão à política
+   padrão (docs/hooks). Quem aprova é `auto_approve`. A orquestra devolve `auto_approve` para os
+   comandos de `agy.comandos` (sem encadeamento) e, nos workers, `deny` para o resto. Nada de
+   `command(*)` nem `--dangerously-skip-permissions`. No Windows, as regras `command(...)` de
+   `settings.json` tendem a exigir o comando exato (docs/permissions); por isso o filtro fica no hook.
 5. **O envelope JSON do agy repete o esquema pedido** (`json_schema.properties.status`...), o que
    engana um leitor ingênuo. A resposta real vem em `structured_output`.
 6. **A verificação do projeto inteiro reprova tudo** quando o projeto já tem dívida de lint.
