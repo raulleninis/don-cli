@@ -440,6 +440,12 @@ trecho do `AGENTS.md` e as permissões no `.claude/settings.json`. Remova as wor
 
 ## Limitações
 
+- **Comandos dos soldati do agy não gravam arquivos na worktree** (achado pelo `don lealdade`, no
+  perfil do usuário e fora dele, agy 1.5.13 no Windows): o sandbox de terminal devolve `EPERM`, embora
+  a documentação diga que a pasta do projeto é gravável. Edições pelas ferramentas de arquivo do agy
+  funcionam; o que não funciona é um comando que grava (build, snapshot, cache de teste). Para esse
+  tipo de tarefa, prefira o Codex, ou deixe a verificação para o don (a do `don.json` roda fora do sandbox).
+
 - Testado de verdade só no Windows. No macOS e no Linux o `symlink` "junction" vira link
   simbólico de diretório; deve funcionar, mas não foi provado.
 - O hook do agy reconhece ferramentas pelo nome (`read*`, `view*`, `list*`... são leitura) e
