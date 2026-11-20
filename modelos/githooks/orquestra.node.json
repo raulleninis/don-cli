@@ -1,0 +1,84 @@
+{
+  "projeto": "{{PROJETO}}",
+  "protegidos": {},
+  "reservados": {
+    "package.json": "Dependências só mudam com autorização humana.",
+    "pnpm-lock.yaml": "Dependências só mudam com autorização humana.",
+    "package-lock.json": "Dependências só mudam com autorização humana.",
+    "yarn.lock": "Dependências só mudam com autorização humana.",
+    "*.config.*": "Configuração de build, lint e teste é território sensível."
+  },
+  "liberados": [],
+  "segredos": [
+    "**/.env",
+    "**/.env.*",
+    "**/*.pem",
+    "**/*.key"
+  ],
+  "worktrees": "../{projeto}-agentes",
+  "links": [
+    "node_modules"
+  ],
+  "verificacao": [
+    {
+      "nome": "lint",
+      "comando": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "{arquivos}"
+      ],
+      "extensoes": [
+        ".js",
+        ".mjs",
+        ".cjs",
+        ".ts",
+        ".tsx",
+        ".jsx"
+      ]
+    },
+    {
+      "nome": "typecheck",
+      "comando": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ]
+    },
+    {
+      "nome": "test",
+      "comando": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--changed",
+        "{base}",
+        "--passWithNoTests"
+      ]
+    }
+  ],
+  "codex": {
+    "modelo": "gpt-6.2-sol",
+    "esforco": "high",
+    "perfil": "orquestra"
+  },
+  "agy": {
+    "modelo": "gemini-3.8-flash-high",
+    "comandos": [
+      "node --test",
+      "node node_modules/",
+      "pnpm test",
+      "pnpm lint",
+      "pnpm typecheck",
+      "pnpm exec",
+      "npm test",
+      "npm run test",
+      "npx vitest",
+      "npx eslint",
+      "npx tsc",
+      "git status",
+      "git diff",
+      "git log"
+    ]
+  },
+  "preambulo": []
+}

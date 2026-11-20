@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "resumo", "arquivos", "testes", "duvidas"],
+  "properties": {
+    "status": { "type": "string", "enum": ["concluido", "parcial", "bloqueado"] },
+    "resumo": { "type": "string" },
+    "arquivos": { "type": "array", "items": { "type": "string" } },
+    "testes": { "type": "string" },
+    "duvidas": { "type": "array", "items": { "type": "string" } }
+  }
+}

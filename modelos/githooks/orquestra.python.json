@@ -1,0 +1,63 @@
+{
+  "projeto": "{{PROJETO}}",
+  "protegidos": {},
+  "reservados": {
+    "pyproject.toml": "Dependências e configuração só mudam com autorização humana.",
+    "uv.lock": "Dependências só mudam com autorização humana.",
+    "poetry.lock": "Dependências só mudam com autorização humana.",
+    "requirements*.txt": "Dependências só mudam com autorização humana."
+  },
+  "liberados": [],
+  "segredos": [
+    "**/.env",
+    "**/.env.*",
+    "**/*.pem",
+    "**/*.key"
+  ],
+  "worktrees": "../{projeto}-agentes",
+  "links": [
+    ".venv"
+  ],
+  "verificacao": [
+    {
+      "nome": "ruff",
+      "comando": [
+        ".venv/Scripts/ruff",
+        "check",
+        "{arquivos}"
+      ],
+      "extensoes": [
+        ".py"
+      ]
+    },
+    {
+      "nome": "pytest",
+      "comando": [
+        ".venv/Scripts/python",
+        "-m",
+        "pytest",
+        "-q"
+      ]
+    }
+  ],
+  "codex": {
+    "modelo": "gpt-6.2-sol",
+    "esforco": "high",
+    "perfil": "orquestra"
+  },
+  "agy": {
+    "modelo": "gemini-3.8-flash-high",
+    "comandos": [
+      ".venv/Scripts/python -m pytest",
+      ".venv/bin/python -m pytest",
+      "pytest",
+      "ruff check",
+      "python -m pytest",
+      "uv run pytest",
+      "git status",
+      "git diff",
+      "git log"
+    ]
+  },
+  "preambulo": []
+}

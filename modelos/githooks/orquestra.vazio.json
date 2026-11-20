@@ -1,0 +1,29 @@
+{
+  "projeto": "{{PROJETO}}",
+  "protegidos": {},
+  "reservados": {},
+  "liberados": [],
+  "segredos": [
+    "**/.env",
+    "**/.env.*",
+    "**/*.pem",
+    "**/*.key"
+  ],
+  "worktrees": "../{projeto}-agentes",
+  "links": [],
+  "verificacao": [],
+  "codex": {
+    "modelo": "gpt-6.2-sol",
+    "esforco": "high",
+    "perfil": "orquestra"
+  },
+  "agy": {
+    "modelo": "gemini-3.8-flash-high",
+    "comandos": [
+      "git status",
+      "git diff",
+      "git log"
+    ]
+  },
+  "preambulo": []
+}

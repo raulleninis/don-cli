@@ -1,0 +1,17 @@
+{
+  "name": "orquestra",
+  "version": "0.1.0",
+  "description": "Claude orquestra; Codex e Antigravity (agy) executam em worktrees descartáveis, com trava de caminhos sensíveis e relatório curto.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "orquestra": "bin/orquestra.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "license": "UNLICENSED"
+}

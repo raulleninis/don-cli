@@ -1,0 +1,37 @@
+{
+  "model": "opus",
+  "permissions": {
+    "allow": [
+      "Bash({{ORQUESTRA}} delegar *)",
+      "Bash({{ORQUESTRA}} listar*)",
+      "Bash({{ORQUESTRA}} limpar *)",
+      "Bash({{ORQUESTRA}} relatorio*)",
+      "Bash({{ORQUESTRA}} checar*)",
+      "Bash(git worktree list*)",
+      "Bash(git merge --squash agente/*)",
+      "Edit(./.agentes/**)",
+      "Write(./.agentes/**)"
+    ],
+    "ask": [
+      "Bash(codex *)",
+      "Bash(agy *)",
+      "Edit(./AGENTS.md)",
+      "Edit(./CLAUDE.md)",
+      "Edit(./.agents/**)",
+      "Edit(./.codex/**)"
+    ],
+    "deny": [
+      "Edit(./.githooks/**)",
+      "Bash(git commit --no-verify*)",
+      "Bash(git commit -n *)",
+      "Bash(git commit * --no-verify*)",
+      "Bash(git commit * -n *)",
+      "Bash(*LIBERA_CAMINHO_PROTEGIDO*)",
+      "Bash(git config core.hooksPath*)",
+      "Bash(git config --unset core.hooksPath*)",
+      "Bash(*--dangerously-skip-permissions*)",
+      "Bash(*--dangerously-bypass*)",
+      "Bash(*danger-full-access*)"
+    ]
+  }
+}
