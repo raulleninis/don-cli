@@ -126,6 +126,7 @@ O `instalar` cria:
 | `.agents/hooks.json`, `.agents/hooks/guarda.mjs` | Hook do agy (mescla com hooks que já existam) |
 | `.claude/skills/don/SKILL.md` | Ensina o Claude a delegar (quem faz o quê, briefing, ciclo) |
 | `.claude/agents/consigliere.md` | Subagente Haiku para buscas baratas |
+| `.claude/agents/soldato-codex.md`, `soldato-agy.md` | Cascas: subagentes Haiku que só rodam a ordem, para o motor aparecer no painel de agentes |
 | `.gitignore` (+ `.don/`), `.gitattributes` (LF nos hooks) | |
 
 Depois, siga os passos que o `instalar` imprime:
@@ -222,6 +223,24 @@ Um modelo barato explora o repositório (leitura) e rascunha o briefing no forma
 arquivos permitidos, onde olhar (`caminho:linhas`), critérios, comando de verificação, contexto e
 dúvidas abertas. Grava em `.don/briefings/<slug>.md` e avisa se listou área reservada como
 permitida. Você só revisa e ajusta, em vez de escrever do zero.
+
+### Ver qual motor está trabalhando (cascas)
+
+O painel de agentes do Claude Code (CLI e extensão do VS Code) só mostra subagentes do Claude. Uma
+ordem ao Codex ou ao agy é um comando Bash e não aparece ali. Para aparecer, a skill `don` manda a
+ordem pela **casca** `soldato-codex` ou `soldato-agy`: um subagente Haiku, só com Bash, aberto com
+a descrição `<Motor>: <tarefa>`. Ele roda o comando em segundo plano com `--relatorio <arquivo>`,
+espera com `don aguardar <arquivo>` (ciclos de até 9 minutos, porque o Bash em primeiro plano para
+em 10) e devolve o relatório sem mexer. Ele recusa comando que não seja do don, que encadeie
+outro comando ou que tente afrouxar uma trava.
+
+- `--relatorio <arquivo>` vale para qualquer comando: grava a saída, inclusive o erro, ao terminar
+  (gravação atômica, então quem aguarda nunca lê pela metade).
+- `don aguardar <arquivo> [--segundos 540]` imprime o relatório ou `AINDA RODANDO` (código 3).
+- Comando curto feito direto pelo don leva o motor na descrição do Bash, por exemplo
+  `Codex (gpt-6.2-sol): revisa diff X`.
+
+O custo é um pouco de Haiku por ordem.
 
 ## Ler contextos grandes (`don resumir`)
 
@@ -467,7 +486,7 @@ Cada uma destas aconteceu nos testes e está tratada no código:
 ## Desinstalar
 
 `git config --unset core.hooksPath`. Depois remova `.githooks/`, `.agents/hooks*`,
-`.claude/skills/don/`, `.claude/agents/consigliere.md`, o perfil do `.codex/config.toml`, o
+`.claude/skills/don/`, `.claude/agents/consigliere.md`, `.claude/agents/soldato-*.md`, o perfil do `.codex/config.toml`, o
 trecho do `AGENTS.md` e as permissões no `.claude/settings.json`. Remova as worktrees abertas com
 `don limpar`.
 

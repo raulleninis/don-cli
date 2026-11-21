@@ -17,9 +17,13 @@ after(() => apagar(raiz));
 
 test('instalar cria os arquivos e preserva hooks existentes do agy', () => {
   for (const rel of ['.githooks/caminhos.mjs', '.githooks/pre-commit', '.githooks/don.json', '.agents/hooks/guarda.mjs',
-    '.claude/skills/don/SKILL.md', '.claude/agents/consigliere.md']) {
+    '.claude/skills/don/SKILL.md', '.claude/agents/consigliere.md', '.claude/agents/soldato-codex.md',
+    '.claude/agents/soldato-agy.md']) {
     assert.ok(fs.existsSync(path.join(raiz, rel)), rel);
   }
+  const casca = fs.readFileSync(path.join(raiz, '.claude/agents/soldato-codex.md'), 'utf8');
+  assert.match(casca, /^name: soldato-codex$/m);
+  assert.doesNotMatch(casca, /\{\{[A-Z]+\}\}/, 'casca sem marcador por trocar');
   const hooks = JSON.parse(fs.readFileSync(path.join(raiz, '.agents/hooks.json'), 'utf8'));
   assert.ok(hooks['don-guarda'] && hooks['outro-hook']);
   assert.match(fs.readFileSync(path.join(raiz, '.gitignore'), 'utf8'), /^\.don\/$/m);

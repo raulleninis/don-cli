@@ -48,8 +48,30 @@ don delegar --motor agy --modo leitura --briefing .don/briefings/<slug>.md
 don delegar --motor agy --swarm --minutos 60 --briefing .don/briefings/<slug>.md
 ```
 
-Tarefa longa: rode com `run_in_background` e siga trabalhando. A base é o `HEAD`: **faça commit do
-que o worker precisa ver antes de delegar.**
+A base é o `HEAD`: **faça commit do que o worker precisa ver antes de delegar.**
+
+### Visível para o Raul: casca e rótulo
+
+Quem acompanha o chat precisa ver qual motor está trabalhando. Duas regras:
+
+1. **Ordem ao Codex ou ao agy passa pela casca.** Abra o subagente `soldato-codex` ou `soldato-agy`
+   (Haiku, só Bash) com `run_in_background: true` e `description` = `<Motor>: <tarefa>` (ex.:
+   `Codex: exportação CSV`, `agy: resumo fase 5`). É isso que aparece no painel de agentes. O
+   prompt da casca leva o comando completo, com `--relatorio .don/cascas/<slug>.txt`, e o rótulo:
+
+   ```text
+   Comando: {{DON}} delegar --motor codex --briefing .don/briefings/<slug>.md --relatorio .don/cascas/<slug>.txt
+   Rótulo: exportação CSV
+   ```
+
+   A casca roda o comando em segundo plano, espera com `don aguardar` e devolve o relatório sem
+   mexer. Ela vale para `delegar`, `revisar`, `resumir` e `briefing`. Siga trabalhando até a
+   notificação dela.
+2. **Bash direto (comando curto, sem casca) leva o motor na descrição:**
+   `Codex (gpt-6.2-sol): revisa diff X`, `agy (gemini-3.8-flash-high): resume docs Y`,
+   `don: checar instalação`.
+
+Se a casca responder `RECUSADO`, o comando estava fora do formato; corrija-o, não contorne a casca.
 
 - `--escalar`: começa barato e sobe a escada de modelos só se falhar por capacidade (nunca em
   `REJEITADO` ou `bloqueado`). Bom padrão para tarefa mecânica: `--modelo gpt-6-luna --escalar`.

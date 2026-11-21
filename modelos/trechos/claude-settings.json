@@ -12,8 +12,9 @@
       "Bash({{DON}} briefing *)",
       "Bash({{DON}} docs atualizar *)",
       "Bash({{DON}} docs verificar *)",
+      "Bash({{DON}} aguardar *)",
       "Bash(git worktree list*)",
-      "Bash(git merge --squash agente/*)",
+      "Bash(git merge --squash soldato/*)",
       "Edit(./.don/**)",
       "Write(./.don/**)"
     ],

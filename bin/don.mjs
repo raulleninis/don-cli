@@ -12,6 +12,7 @@ import { configurar } from '../lib/configurar.mjs';
 import { lealdade } from '../lib/lealdade.mjs';
 import { carregarProjeto } from '../lib/projeto.mjs';
 import { resumir } from '../lib/consigliere/resumir.mjs';
+import { aguardar, capturarRelatorio } from '../lib/aguardar.mjs';
 
 const AJUDA = `don — delegação de tarefas do Claude para Codex e agy
 
@@ -41,6 +42,9 @@ Uso (rode de dentro do projeto):
   don docs baixar|atualizar|verificar --pasta <destino> [--indice <url llms.txt>] [--filtro <regex>]
       [--forcar] [--remover]   documentação local; atualizar/verificar usam ETag (304 = não mudou)
   don mcp-docs --pasta <p1>,<p2>   servidor MCP (stdio) com docs_listar, docs_buscar, docs_ler
+  don aguardar <arquivo> [--segundos 540]
+      espera o relatório de um comando rodado com --relatorio <arquivo> (código 3 = ainda rodando)
+  --relatorio <arquivo>  (qualquer comando) grava também a saída, inclusive o erro, nesse arquivo
   don listar             worktrees de soldati abertas
   don limpar <slug>      remove worktree e branch (desfaz as junctions antes)
   don relatorio          resumo de .don/registro.jsonl
@@ -68,8 +72,12 @@ function opcoes(argv) {
 
 const [acao, ...resto] = process.argv.slice(2);
 const o = opcoes(resto);
+if (o.relatorio && acao !== 'aguardar') capturarRelatorio(o.relatorio);
 try {
   switch (acao) {
+    case 'aguardar':
+      await aguardar(o._[0], Number(o.segundos ?? 540));
+      break;
     case 'delegar':
       await delegar(await carregarProjeto(), o);
       break;
