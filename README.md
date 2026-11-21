@@ -351,6 +351,12 @@ Quatro proteções, cada uma para um tipo de problema, todas configuráveis em `
 | Orçamento de tokens (Codex) | loop que gasta sem parar | `features.rollout_budget` com lembretes a 25% e 10% do fim (experimental no Codex) | `limite_tokens: 400000` |
 | Limite de passos (agy) | loop de ferramentas | o hook conta as ferramentas; passou do teto, só deixa entregar a resposta | `limite_passos: 150` (swarm ×4) |
 | Sentinela de conclusão | processo que terminou mas não sai | `notify` do Codex e evento `Stop` do agy gravam um marcador; vivo 20 s depois → encerra e segue | sempre |
+| Tempo da verificação | teste que trava (ex.: Vitest esperando para sempre) | `minutos` de cada etapa de `verificacao`; o relatório diz `ESTOUROU n min`, não `FALHOU` | 15 min por etapa |
+| Órfãos | don interrompido no meio, workers do Vitest (tinypool) que sobram | Ctrl+C ou sinal no don encerra as árvores que ele abriu; antes de apagar a worktree, `don limpar` encerra o que roda a partir dela (linha de comando cita a pasta, mais os descendentes nascidos depois dela, inclusive órfãos de pais registrados em `.don/saidas/<slug>/pids`) | sempre |
+
+Se o don for morto à força (o Windows encerra sem avisar), as árvores sobram até o `don limpar <slug>`.
+Um pid registrado só é usado se o processo nasceu depois da worktree, para não atingir outro programa
+que herdou o número.
 
 O relatório diz qual proteção agiu (`Soldato interrompido: ...`). Para diagnosticar, rode com
 `DON_DEBUG=1`: cada início, saída e interrupção de processo vai para o stderr com horário.
